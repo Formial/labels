@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Formial Labs — Compounding Dashboard</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700;800&display=swap');
 
@@ -596,234 +595,119 @@ function switchTab(name, btn) {
 function downloadPDF() {
   if (!_groups.length) { showToast('No batches to export'); return; }
 
-  const { jsPDF } = window.jspdf;
-  const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+  const date = new Date().toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' });
+  const total = _groups.reduce((s,g) => s + g.count, 0);
 
-  const pageW = 210, pageH = 297;
-  const margin = 12, colGap = 6;
-  const colW = (pageW - margin * 2 - colGap) / 2;
-
-  // ── colours ──────────────────────────────────────────────────────────────
-  const C = {
-    accent:  [30, 160, 100],
-    accent2: [40, 130, 200],
-    red:     [180, 40,  40],
-    muted:   [120, 120, 130],
-    border:  [210, 210, 215],
-    bg:      [248, 250, 252],
-    bgAlt:   [255, 255, 255],
-    dark:    [30,  30,  40],
-    warn:    [180, 120, 20],
-  };
-
-  // ── page header ───────────────────────────────────────────────────────────
-  function drawPageHeader(doc, pageNum, totalPages) {
-    doc.setFillColor(30, 160, 100);
-    doc.roundedRect(margin, 8, 40, 10, 2, 2, 'F');
-    doc.setTextColor(255, 255, 255);
-    doc.setFontSize(9); doc.setFont('helvetica', 'bold');
-    doc.text('Formial Labs', margin + 20, 14.5, { align: 'center' });
-
-    doc.setTextColor(...C.dark);
-    doc.setFontSize(13); doc.setFont('helvetica', 'bold');
-    doc.text('Compounding Batch Sheet', margin + 44, 14.5);
-
-    const d = new Date().toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' });
-    const total = _groups.reduce((s,g)=>s+g.count,0);
-    doc.setFontSize(7); doc.setFont('helvetica', 'normal');
-    doc.setTextColor(...C.muted);
-    doc.text(`${_groups.length} formula${_groups.length>1?'s':''} · ${total} pump${total>1?'s':''} · ${d}   Page ${pageNum}/${totalPages}`,
-      pageW - margin, 14.5, { align: 'right' });
-
-    doc.setDrawColor(...C.border);
-    doc.setLineWidth(0.3);
-    doc.line(margin, 20, pageW - margin, 20);
-  }
-
-  // ── draw one batch card, returns new Y ────────────────────────────────────
-  function drawCard(doc, g, x, y, w) {
+  // Build cards HTML
+  let cardsHtml = '';
+  for (const g of _groups) {
+    const code   = codeLabel(g.formula);
     const rows   = calcRows(g.formula, g.count);
     const totalG = totalGrams(g.count);
-    const code   = codeLabel(g.formula);
     const tcs    = isTCS(g.formula);
 
-    // estimate card height
-    const rowH   = 5.2;
-    const cardH  = 8 + 5 + 5 + 5.5 + rows.length * rowH + 7;
-
-    // card background
-    doc.setFillColor(...C.bg);
-    doc.setDrawColor(...C.border);
-    doc.setLineWidth(0.25);
-    doc.roundedRect(x, y, w, cardH, 2, 2, 'FD');
-
-    let cy = y + 6;
-
-    // code label
-    doc.setFontSize(13); doc.setFont('helvetica', 'bold');
-    doc.setTextColor(...C.accent);
-    doc.text(code, x + 4, cy);
-    cy += 5;
-
-    // raw formula (truncate if too long)
-    const rawText = g.raw.length > 55 ? g.raw.slice(0, 53) + '…' : g.raw;
-    doc.setFontSize(6.5); doc.setFont('helvetica', 'normal');
-    doc.setTextColor(...C.muted);
-    doc.text(rawText, x + 4, cy);
-    cy += 5;
-
-    // pills
-    const pillH = 4, pillR = 1;
-    let px = x + 4;
-    // pumps pill
-    doc.setFillColor(230, 255, 240); doc.setDrawColor(...C.accent);
-    doc.setLineWidth(0.2);
-    const pumpTxt = `${g.count} pump${g.count>1?'s':''}`;
-    const pumpW = doc.getTextWidth(pumpTxt) + 5;
-    doc.roundedRect(px, cy - 3, pumpW, pillH, pillR, pillR, 'FD');
-    doc.setFontSize(6); doc.setFont('helvetica', 'bold'); doc.setTextColor(...C.accent);
-    doc.text(pumpTxt, px + pumpW/2, cy, { align: 'center' });
-    px += pumpW + 3;
-    // grams pill
-    const gramTxt = `${totalG} g`;
-    const gramW = doc.getTextWidth(gramTxt) + 5;
-    doc.setFillColor(225, 240, 255); doc.setDrawColor(...C.accent2);
-    doc.roundedRect(px, cy - 3, gramW, pillH, pillR, pillR, 'FD');
-    doc.setFontSize(6); doc.setTextColor(...C.accent2);
-    doc.text(gramTxt, px + gramW/2, cy, { align: 'center' });
-    px += gramW + 3;
-    if (tcs) {
-      const tcsTxt = 'TCS · PG';
-      const tcsW = doc.getTextWidth(tcsTxt) + 5;
-      doc.setFillColor(255, 248, 220); doc.setDrawColor(...C.warn);
-      doc.roundedRect(px, cy - 3, tcsW, pillH, pillR, pillR, 'FD');
-      doc.setFontSize(6); doc.setTextColor(...C.warn);
-      doc.text(tcsTxt, px + tcsW/2, cy, { align: 'center' });
-    }
-    cy += 5.5;
-
-    // table header
-    const c1=4, c2=w*0.42, c3=w*0.65;
-    doc.setFillColor(235, 238, 245);
-    doc.rect(x, cy - 3.5, w, 5, 'F');
-    doc.setFontSize(6); doc.setFont('helvetica', 'bold'); doc.setTextColor(...C.muted);
-    doc.text('INGREDIENT', x + c1, cy);
-    doc.text('%', x + c2, cy);
-    doc.text('QTY', x + c3, cy);
-    cy += 1.5;
-
-    // table rows
-    doc.setFont('helvetica', 'normal');
+    let tRows = '';
     for (const r of rows) {
-      cy += rowH;
-      const isEven = rows.indexOf(r) % 2 === 0;
-      if (r.type !== 'total') {
-        doc.setFillColor(...(isEven ? C.bgAlt : [242, 245, 250]));
-        doc.rect(x, cy - 3.8, w, rowH, 'F');
-      } else {
-        doc.setFillColor(225, 235, 245);
-        doc.rect(x, cy - 3.8, w, rowH, 'F');
-      }
-
-      let txtColor = C.dark;
-      if (r.type === 'tret')  txtColor = C.red;
-      else if (r.type === 'solv') txtColor = C.accent2;
-      else if (r.type === 'exc')  txtColor = C.muted;
-      else if (r.type === 'base') txtColor = [150, 155, 170];
-      else if (r.type === 'total'){ txtColor = C.dark; doc.setFont('helvetica','bold'); }
-
-      doc.setFontSize(7); doc.setTextColor(...txtColor);
-      doc.text(r.name,            x + c1, cy);
-      doc.text(r.pct.toFixed(3)+'%', x + c2, cy);
-
-      let qStr;
-      if      (r.type==='tret')  qStr = r.qty.toFixed(2)+' ml';
-      else if (r.type==='solv')  qStr = r.qty.toFixed(4)+' ml';
-      else if (r.type==='total') qStr = r.qty.toFixed(2)+' g';
-      else                       qStr = r.qty.toFixed(4)+' g';
-      doc.text(qStr, x + c3, cy);
-      if (r.type === 'total') doc.setFont('helvetica','normal');
-    }
-    cy += 2;
-
-    // footnote
-    doc.setFontSize(5.5); doc.setTextColor(...C.muted);
-    doc.text('* Tret stock 0.1g/10ml (ml shown)  ** Solvent = 50% non-Tret API wt.', x + 4, cy + 3);
-
-    return y + cardH + 5;
-  }
-
-  // ── layout: 2 columns, new page when needed ───────────────────────────────
-  const topY    = 24;
-  const bottomY = pageH - 10;
-
-  // pre-compute total pages (approximate)
-  // We'll just build and let jsPDF handle pages
-  let col = 0;
-  let xPos = [margin, margin + colW + colGap];
-  let yPos = [topY, topY];
-  let currentPage = 1;
-  const totalPages = Math.ceil(_groups.length / 2); // rough estimate, updated below
-
-  drawPageHeader(doc, 1, '?');
-
-  for (let i = 0; i < _groups.length; i++) {
-    const g   = _groups[i];
-    const rows = calcRows(g.formula, g.count);
-    const cardH = 8 + 5 + 5 + 5.5 + rows.length * 5.2 + 7 + 5;
-
-    // if card doesn't fit in this column, try the other column or new page
-    if (yPos[col] + cardH > bottomY) {
-      col = col === 0 ? 1 : 0; // try other column
-      if (yPos[col] + cardH > bottomY) {
-        // both columns full — new page
-        doc.addPage();
-        currentPage++;
-        yPos = [topY, topY];
-        col  = 0;
-        drawPageHeader(doc, currentPage, '?');
-      }
+      let qStr, cls = '';
+      if      (r.type === 'tret')  { qStr = `${r.qty.toFixed(2)} ml`;   cls = 'tret'; }
+      else if (r.type === 'solv')  { qStr = `${r.qty.toFixed(4)} ml`;   cls = 'solv'; }
+      else if (r.type === 'exc')   { qStr = `${r.qty.toFixed(4)} g`;    cls = 'exc'; }
+      else if (r.type === 'base')  { qStr = `${r.qty.toFixed(4)} g`;    cls = 'base'; }
+      else if (r.type === 'total') { qStr = `${r.qty.toFixed(2)} g`;    cls = 'total'; }
+      else                         { qStr = `${r.qty.toFixed(4)} g`; }
+      tRows += `<tr class="${cls}"><td>${r.name}</td><td>${r.pct.toFixed(3)}%</td><td>${qStr}</td></tr>`;
     }
 
-    const newY = drawCard(doc, g, xPos[col], yPos[col], colW);
-    yPos[col]  = newY;
-    col = col === 0 ? 1 : 0;
+    cardsHtml += `
+    <div class="card">
+      <div class="code">${code}</div>
+      <div class="raw">${g.raw}</div>
+      <div class="pills">
+        <span class="pill green">${g.count} pump${g.count>1?'s':''}</span>
+        <span class="pill blue">${totalG} g</span>
+        ${tcs ? '<span class="pill warn">TCS · PG</span>' : ''}
+      </div>
+      <table>
+        <thead><tr><th>Ingredient</th><th>%</th><th>Qty</th></tr></thead>
+        <tbody>${tRows}</tbody>
+      </table>
+      <div class="note">* Tret stock 0.1g/10ml (ml shown) &nbsp;|&nbsp; ** Solvent = 50% non-Tret API wt.</div>
+    </div>`;
   }
 
-  // fix up page numbers
-  const totalPagesReal = doc.getNumberOfPages();
-  for (let p = 1; p <= totalPagesReal; p++) {
-    doc.setPage(p);
-    doc.setFontSize(7); doc.setFont('helvetica','normal'); doc.setTextColor(...C.muted);
-    const d = new Date().toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});
-    const total = _groups.reduce((s,g)=>s+g.count,0);
-    // overwrite the page line on the right
-    doc.setFillColor(255,255,255);
-    doc.rect(pageW - 80, 8, 80, 14, 'F');
-    doc.text(
-      `${_groups.length} formula${_groups.length>1?'s':''} · ${total} pump${total>1?'s':''} · ${d}   Page ${p}/${totalPagesReal}`,
-      pageW - margin, 14.5, { align: 'right' }
-    );
+  const html = `<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Formial Labs — Batch Sheet ${date}</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: Arial, sans-serif; background: #fff; color: #0f172a; padding: 16px; }
+
+  .page-header { text-align: center; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 2px solid #0d9488; }
+  .page-header h1 { font-size: 20px; color: #0d9488; margin-bottom: 4px; }
+  .page-header p  { font-size: 11px; color: #64748b; }
+
+  .print-btn {
+    display: block; margin: 0 auto 20px; padding: 12px 32px;
+    background: #0d9488; color: #fff; border: none; border-radius: 8px;
+    font-size: 15px; font-weight: 700; cursor: pointer; letter-spacing: 0.5px;
   }
+  @media print { .print-btn { display: none; } }
 
-  const d = new Date().toISOString().slice(0,10);
-  const filename = `formial_batches_${d}.pdf`;
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  @media (max-width: 500px) { .grid { grid-template-columns: 1fr; } }
 
-  // Use Blob URL for reliable download on Android / ChromeOS / Primebook
-  const pdfBlob = doc.output('blob');
-  const blobUrl = URL.createObjectURL(pdfBlob);
-  const a = document.createElement('a');
-  a.href = blobUrl;
-  a.download = filename;
-  a.style.display = 'none';
-  document.body.appendChild(a);
-  a.click();
-  setTimeout(() => {
+  .card { border: 1.5px solid #bae6fd; border-radius: 10px; padding: 12px; page-break-inside: avoid; break-inside: avoid; background: #f8faff; }
+  .code { font-size: 17px; font-weight: 700; color: #0d9488; margin-bottom: 2px; }
+  .raw  { font-size: 9px; color: #64748b; margin-bottom: 8px; font-family: monospace; line-height: 1.5; }
+
+  .pills { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 10px; }
+  .pill  { font-size: 9px; padding: 2px 8px; border-radius: 20px; font-family: monospace; font-weight: 600; }
+  .green { background: #d1fae5; color: #065f46; border: 1px solid #6ee7b7; }
+  .blue  { background: #dbeafe; color: #1e40af; border: 1px solid #93c5fd; }
+  .warn  { background: #fef3c7; color: #92400e; border: 1px solid #fcd34d; }
+
+  table  { width: 100%; border-collapse: collapse; }
+  th     { font-size: 9px; color: #64748b; text-transform: uppercase; letter-spacing: 0.4px; padding: 4px 6px; border-bottom: 1.5px solid #bae6fd; text-align: left; background: #f0f9ff; }
+  td     { font-size: 10px; padding: 4px 6px; border-bottom: 1px solid #e0f2fe; font-family: monospace; color: #0f172a; }
+  tr:last-child td { border-bottom: none; }
+  tr.tret  td { color: #dc2626; }
+  tr.solv  td { color: #0369a1; }
+  tr.exc   td { color: #64748b; }
+  tr.base  td { color: #94a3b8; }
+  tr.total td { background: #f0fdfa; color: #0d9488; font-weight: 700; border-top: 1.5px solid #99f6e4; }
+
+  .note { font-size: 8px; color: #94a3b8; margin-top: 8px; font-family: monospace; line-height: 1.6; }
+</style>
+</head>
+<body>
+  <div class="page-header">
+    <h1>Formial Labs — Compounding Batch Sheet</h1>
+    <p>${_groups.length} unique formula${_groups.length>1?'s':''} &nbsp;·&nbsp; ${total} pump${total>1?'s':''} &nbsp;·&nbsp; ${date}</p>
+  </div>
+  <button class="print-btn" onclick="window.print()">🖨️ Print / Save as PDF</button>
+  <div class="grid">${cardsHtml}</div>
+</body>
+</html>`;
+
+  // Open in new tab — works on all Android browsers
+  const blob = new Blob([html], { type: 'text/html' });
+  const url  = URL.createObjectURL(blob);
+  const tab  = window.open(url, '_blank');
+  if (!tab) {
+    // If popup blocked, fallback: create a temporary link
+    const a = document.createElement('a');
+    a.href = url;
+    a.target = '_blank';
+    a.rel = 'noopener';
+    document.body.appendChild(a);
+    a.click();
     document.body.removeChild(a);
-    URL.revokeObjectURL(blobUrl);
-  }, 3000);
-
-  showToast('PDF saved to Downloads!');
+  }
+  setTimeout(() => URL.revokeObjectURL(url), 10000);
+  showToast('Opened in new tab — tap Print!');
 }
 
 function showToast(msg) {
