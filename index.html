@@ -601,7 +601,6 @@ function sendBMR(groups) {
   statusEl.className = 'bmr-status idle'; statusEl.textContent = 'sending to Sheets…';
 
   const now  = new Date();
-  // Date format matching CSV: DD-MM-YYYY
   const dd   = String(now.getDate()).padStart(2,'0');
   const mm   = String(now.getMonth()+1).padStart(2,'0');
   const yyyy = now.getFullYear();
@@ -613,62 +612,56 @@ function sendBMR(groups) {
     callbackFired = true;
     if (response && response.status === 'ok') {
       statusEl.className  = 'bmr-status ok';
-      statusEl.textContent = `✓ BMR + Inventory logged — ${groups.length} batch${groups.length > 1 ? 'es' : ''} → Sheets`;
+      statusEl.textContent = `✓ Logged to Sheets — ${groups.length} batch${groups.length > 1 ? 'es' : ''}`;
     } else {
       statusEl.className  = 'bmr-status err';
-      statusEl.textContent = '✗ BMR error — check Apps Script logs';
+      statusEl.textContent = '✗ Error — check Apps Script logs';
     }
   };
 
-  // Send each batch group as one row
+  // ── STEP 1: Send one usage log row per batch group ──
+  // Each group = one formula × N pumps
   groups.forEach((g, idx) => {
-    const calcR    = calcRows(g.formula, g.count);
-    const totalP   = g.count;
-
-    // Build ingredient quantities in CSV column order
+    const calcR   = calcRows(g.formula, g.count);
     const ingQtys = ING_COLS.map(col => getIngQty(calcR, col));
 
     const params = new URLSearchParams({
-      action:     'bmr',
-      date:       date,
-      totalPumps: totalP,
-      callback:   'bmrCallback'
+      action:   'usage',
+      date:     date,
+      pumps:    g.count,
+      callback: 'bmrCallback'
     });
-    // Add each ingredient as a separate param
     ING_COLS.forEach((col, i) => params.append('ing_' + i, ingQtys[i]));
 
-    const script = document.createElement('script');
-    script.src = url + '?' + params.toString();
-    script.onerror = () => {
-      statusEl.className  = 'bmr-status err';
-      statusEl.textContent = '✗ BMR failed — re-check URL & deployment';
-    };
-    document.body.appendChild(script);
-    setTimeout(() => script.remove(), 10000);
+    scriptCall(url, params);
   });
 
-  // Send inventory deduction as a single separate call (after a short delay)
+  // ── STEP 2: Send packaging deduction (total pumps across all groups) ──
   setTimeout(() => {
     const totalPumps = groups.reduce((s, g) => s + g.count, 0);
     const params = new URLSearchParams({
-      action:      'inventory',
-      totalPumps:  totalPumps,
-      batches:     groups.length,
-      callback:    'bmrCallback'
+      action:   'packaging',
+      date:     date,
+      pumps:    totalPumps,
+      callback: 'bmrCallback'
     });
-    const script = document.createElement('script');
-    script.src = url + '?' + params.toString();
-    document.body.appendChild(script);
-    setTimeout(() => script.remove(), 10000);
-  }, 500);
+    scriptCall(url, params);
+  }, 800);
 
-  // Fallback status after 7s if no callback
+  // Fallback — if no callback in 8s, assume success
   setTimeout(() => {
     if (!callbackFired) {
       statusEl.className  = 'bmr-status ok';
       statusEl.textContent = `✓ Sent — ${groups.length} batch${groups.length > 1 ? 'es' : ''} logged`;
     }
-  }, 7000);
+  }, 8000);
+}
+
+function scriptCall(url, params) {
+  const s = document.createElement('script');
+  s.src   = url + '?' + params.toString();
+  document.body.appendChild(s);
+  setTimeout(() => s.remove(), 12000);
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
