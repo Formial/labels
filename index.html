@@ -539,7 +539,7 @@ function downloadLabels() {
   for (const r of sorted) {
     wsData.push([
       r.name_age,
-      r.formula,
+      r.formula.split('+').map(s => s.trim()).join('  '),
       r.directions,
       r.comp ? `Date of Compounding: ${r.comp}` : '',
       r.exp  ? `Date of Expiry: ${r.exp}` : '',
