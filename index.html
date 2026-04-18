@@ -547,10 +547,49 @@ function renderMaster(groups) {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// BMR → GOOGLE SHEETS
-// Uses JSONP-style script injection — the ONLY method that works reliably
-// from a plain HTML file to Google Apps Script without CORS errors.
+// BMR + INVENTORY → GOOGLE SHEETS
+// Sends one row per batch group to Apps Script via script-tag (JSONP).
+// BMR format matches the CSV: Date, Total Pumps, each ingredient quantity.
+// Also triggers inventory deduction (1 per batch).
 // ─────────────────────────────────────────────────────────────────────────────
+
+// Ingredient columns in the exact order matching the CSV / Google Sheet
+const ING_COLS = [
+  "Tretinoin","Azelaic acid","Niacinamide","Spironolactone","Clindamycin",
+  "Hydroquinone","Kojic acid","Hyaluronic","Adapalene","Benzoyl Peroxide",
+  "Minoxidil","Tranexamic acid","Hydrocortisone","Alpha Arbutin",
+  "Transcutol-P","Sodium Metabisulphite","EDTA","BHT"
+];
+
+function getIngQty(calcR, ingName) {
+  // Match calc rows to CSV column names
+  const nameMap = {
+    "Tretinoin":          r => r.type === 'tret',
+    "Azelaic acid":       r => r.name.toLowerCase().replace(/ \*+/g,'').includes('azelaic'),
+    "Niacinamide":        r => r.name.toLowerCase().replace(/ \*+/g,'').includes('niacinamide'),
+    "Spironolactone":     r => r.name.toLowerCase().replace(/ \*+/g,'').includes('spironolactone'),
+    "Clindamycin":        r => r.name.toLowerCase().replace(/ \*+/g,'').includes('clindamycin'),
+    "Hydroquinone":       r => r.name.toLowerCase().replace(/ \*+/g,'').includes('hydroquinone'),
+    "Kojic acid":         r => r.name.toLowerCase().replace(/ \*+/g,'').includes('kojic'),
+    "Hyaluronic":         r => r.name.toLowerCase().replace(/ \*+/g,'').includes('hyaluronic'),
+    "Adapalene":          r => r.name.toLowerCase().replace(/ \*+/g,'').includes('adapalene'),
+    "Benzoyl Peroxide":   r => r.name.toLowerCase().replace(/ \*+/g,'').includes('benzoyl'),
+    "Minoxidil":          r => r.name.toLowerCase().replace(/ \*+/g,'').includes('minoxidil'),
+    "Tranexamic acid":    r => r.name.toLowerCase().replace(/ \*+/g,'').includes('tranexamic'),
+    "Hydrocortisone":     r => r.name.toLowerCase().replace(/ \*+/g,'').includes('hydrocortisone'),
+    "Alpha Arbutin":      r => r.name.toLowerCase().replace(/ \*+/g,'').includes('arbutin'),
+    "Transcutol-P":       r => r.type === 'solv' && r.name.toLowerCase().includes('transcutol'),
+    "Sodium Metabisulphite": r => r.name.toLowerCase().includes('metabisulph'),
+    "EDTA":               r => r.name.toLowerCase().includes('edta'),
+    "BHT":                r => r.name.toLowerCase().includes('bht'),
+  };
+  const matcher = nameMap[ingName];
+  if (!matcher) return 0;
+  const row = calcR.find(matcher);
+  if (!row) return 0;
+  return parseFloat(row.qty.toFixed(4));
+}
+
 function sendBMR(groups) {
   const url      = document.getElementById('bmrUrl').value.trim();
   const enabled  = document.getElementById('bmrEnabled').checked;
@@ -562,69 +601,74 @@ function sendBMR(groups) {
   statusEl.className = 'bmr-status idle'; statusEl.textContent = 'sending to Sheets…';
 
   const now  = new Date();
-  const date = now.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
-  const time = now.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+  // Date format matching CSV: DD-MM-YYYY
+  const dd   = String(now.getDate()).padStart(2,'0');
+  const mm   = String(now.getMonth()+1).padStart(2,'0');
+  const yyyy = now.getFullYear();
+  const date = `${dd}-${mm}-${yyyy}`;
 
-  // Send one row at a time via script-tag injection (bypasses CORS completely)
-  let sent = 0;
-  groups.forEach((g, idx) => {
-    const code   = codeLabel(g.formula);
-    const totalG = totalGrams(g.count);
-    const calcR  = calcRows(g.formula, g.count);
+  let callbackFired = false;
 
-    const ingDetail = calcR
-      .filter(r => r.type !== 'total')
-      .map(r => {
-        const unit = (r.type === 'tret' || r.type === 'solv') ? 'ml' : 'g';
-        const qty  = (r.type === 'tret') ? r.qty.toFixed(2)
-                   : (r.type === 'solv') ? r.qty.toFixed(4)
-                   : r.qty.toFixed(4);
-        return `${r.name.replace(/ \*+/g,'')} ${r.pct.toFixed(2)}% -> ${qty}${unit}`;
-      })
-      .join(' | ');
-
-    // Encode all data as URL params — Apps Script reads these via e.parameter
-    const params = new URLSearchParams({
-      date:        date,
-      time:        time,
-      batchCode:   code,
-      formula:     g.raw,
-      pumps:       g.count,
-      totalGrams:  totalG,
-      tcsFlag:     isTCS(g.formula) ? 'YES' : 'NO',
-      ingredients: ingDetail,
-      callback:    'bmrCallback'   // JSONP callback name
-    });
-
-    // Inject a <script> tag — this is a GET request, no CORS restrictions
-    const script = document.createElement('script');
-    script.src = url + '?' + params.toString();
-    script.onerror = () => {
-      statusEl.className  = 'bmr-status err';
-      statusEl.textContent = '✗ BMR failed — re-check URL and deployment settings';
-    };
-    document.body.appendChild(script);
-    setTimeout(() => script.remove(), 8000);
-  });
-
-  // bmrCallback is called by Apps Script when it responds with callback(data)
   window.bmrCallback = function(response) {
+    callbackFired = true;
     if (response && response.status === 'ok') {
       statusEl.className  = 'bmr-status ok';
-      statusEl.textContent = `✓ BMR logged — ${groups.length} batch${groups.length > 1 ? 'es' : ''} → Sheets`;
+      statusEl.textContent = `✓ BMR + Inventory logged — ${groups.length} batch${groups.length > 1 ? 'es' : ''} → Sheets`;
     } else {
       statusEl.className  = 'bmr-status err';
       statusEl.textContent = '✗ BMR error — check Apps Script logs';
     }
   };
 
-  // Fallback: if no callback in 6s, assume it worked silently (Apps Script sometimes doesn't call back)
+  // Send each batch group as one row
+  groups.forEach((g, idx) => {
+    const calcR    = calcRows(g.formula, g.count);
+    const totalP   = g.count;
+
+    // Build ingredient quantities in CSV column order
+    const ingQtys = ING_COLS.map(col => getIngQty(calcR, col));
+
+    const params = new URLSearchParams({
+      action:     'bmr',
+      date:       date,
+      totalPumps: totalP,
+      callback:   'bmrCallback'
+    });
+    // Add each ingredient as a separate param
+    ING_COLS.forEach((col, i) => params.append('ing_' + i, ingQtys[i]));
+
+    const script = document.createElement('script');
+    script.src = url + '?' + params.toString();
+    script.onerror = () => {
+      statusEl.className  = 'bmr-status err';
+      statusEl.textContent = '✗ BMR failed — re-check URL & deployment';
+    };
+    document.body.appendChild(script);
+    setTimeout(() => script.remove(), 10000);
+  });
+
+  // Send inventory deduction as a single separate call (after a short delay)
   setTimeout(() => {
-    if (statusEl.textContent === 'sending to Sheets…') {
+    const totalPumps = groups.reduce((s, g) => s + g.count, 0);
+    const params = new URLSearchParams({
+      action:      'inventory',
+      totalPumps:  totalPumps,
+      batches:     groups.length,
+      callback:    'bmrCallback'
+    });
+    const script = document.createElement('script');
+    script.src = url + '?' + params.toString();
+    document.body.appendChild(script);
+    setTimeout(() => script.remove(), 10000);
+  }, 500);
+
+  // Fallback status after 7s if no callback
+  setTimeout(() => {
+    if (!callbackFired) {
       statusEl.className  = 'bmr-status ok';
       statusEl.textContent = `✓ Sent — ${groups.length} batch${groups.length > 1 ? 'es' : ''} logged`;
     }
-  }, 6000);
+  }, 7000);
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
