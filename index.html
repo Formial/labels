@@ -524,10 +524,26 @@ function sendToSheets(groups) {
     fireScript(url + '?' + pp.toString());
   }, 1500);
 
-  // Fallback after 8s
+  // Send BMR after 3s
+  setTimeout(() => {
+    // Build formulas array: one entry per unique formula group
+    const formulasList = groups.map(g => ({
+      formula: g.raw,
+      pumps:   g.count
+    }));
+    const bp = new URLSearchParams({
+      action:   'bmr',
+      date:     date,
+      formulas: JSON.stringify(formulasList),
+      callback: '_sheetsCallback'
+    });
+    fireScript(url + '?' + bp.toString());
+  }, 3000);
+
+  // Fallback after 10s
   setTimeout(() => {
     if (!fired) { statusEl.style.color='var(--green)'; statusEl.textContent='✓ Sent'; }
-  }, 8000);
+  }, 10000);
 }
 
 function fireScript(src) {
