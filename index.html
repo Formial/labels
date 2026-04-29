@@ -173,40 +173,12 @@ table.prev tbody tr:hover td{background:var(--s3);}
             <stop offset="50%" stop-color="#d2d2d2"/>
             <stop offset="100%" stop-color="#909090"/>
           </linearGradient>
-          <linearGradient id="silverDark" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stop-color="#383838"/>
-            <stop offset="30%" stop-color="#888"/>
-            <stop offset="55%" stop-color="#b0b0b0"/>
-            <stop offset="80%" stop-color="#707070"/>
-            <stop offset="100%" stop-color="#303030"/>
-          </linearGradient>
-          <linearGradient id="pumpHead" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stop-color="#d5d5d5"/>
-            <stop offset="40%" stop-color="#e8e8e8"/>
-            <stop offset="100%" stop-color="#909090"/>
-          </linearGradient>
           <linearGradient id="labelBg" x1="0%" y1="0%" x2="100%" y2="0%">
             <stop offset="0%" stop-color="#04090f"/>
             <stop offset="50%" stop-color="#08121e"/>
             <stop offset="100%" stop-color="#030710"/>
           </linearGradient>
-          <linearGradient id="refillBody" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stop-color="#8090a0"/>
-            <stop offset="30%" stop-color="#b8c8d4"/>
-            <stop offset="55%" stop-color="#d0dce6"/>
-            <stop offset="80%" stop-color="#a8b8c4"/>
-            <stop offset="100%" stop-color="#687888"/>
-          </linearGradient>
         </defs>
-
-        <ellipse cx="100" cy="356" rx="44" ry="5" fill="#000" opacity=".5"/>
-        <path d="M 30 140 Q 28 280 30 338 Q 100 348 170 338 Q 172 280 170 140 Z" fill="url(#glassBody)" stroke="#1a3a60" stroke-width="1.2"/>
-        <path d="M 30 140 Q 28 280 30 338 Q 100 348 170 338 Q 172 280 170 140 Z" fill="url(#glassSheen)"/>
-        <rect x="30" y="140" width="14" height="198" rx="7" fill="#030912" opacity=".65"/>
-        <rect x="156" y="140" width="14" height="198" rx="7" fill="#030912" opacity=".6"/>
-        <ellipse cx="100" cy="336" rx="60" ry="8" fill="rgba(120,180,220,.06)"/>
-        <rect x="60" y="108" width="80" height="38" rx="6" fill="url(#glassBody)" stroke="#1a3a60" stroke-width="1"/>
-        <rect x="68" y="110" width="22" height="34" rx="4" fill="rgba(255,255,255,.07)"/>
 
         <ellipse cx="100" cy="376" rx="44" ry="5" fill="#000" opacity=".5"/>
         <path d="M 32 148 Q 30 290 32 352 Q 100 362 168 352 Q 170 290 168 148 Z" fill="url(#glassBody)" stroke="#1a3a60" stroke-width="1.2"/>
@@ -216,9 +188,11 @@ table.prev tbody tr:hover td{background:var(--s3);}
         <ellipse cx="100" cy="350" rx="60" ry="8" fill="rgba(100,160,210,.05)"/>
         <rect x="58" y="116" width="84" height="38" rx="6" fill="url(#glassBody)" stroke="#1a3a60" stroke-width="1"/>
         <rect x="68" y="118" width="24" height="34" rx="4" fill="rgba(255,255,255,.06)"/>
+
         <!-- label -->
         <rect x="40" y="172" width="120" height="136" rx="7" fill="url(#labelBg)" stroke="#102030" stroke-width=".6"/>
         <rect x="44" y="176" width="112" height="128" rx="5" fill="none" stroke="#081828" stroke-width=".5"/>
+        <text x="100" y="192" text-anchor="middle" font-family="Space Grotesk,sans-serif" font-size="7" fill="#1c3858" letter-spacing="3">NAME</text>
         <line x1="48" y1="195" x2="152" y2="195" stroke="#081828" stroke-width=".5"/>
         <text x="100" y="218" text-anchor="middle" font-family="Barlow Condensed,sans-serif" font-size="26" font-weight="800" fill="#c8e4f6" letter-spacing="1.5">Emma's</text>
         <text x="100" y="230" text-anchor="middle" font-family="Space Grotesk,sans-serif" font-size="6" fill="#1c3858" letter-spacing="3">CHOSEN FOR YOU</text>
@@ -271,6 +245,7 @@ table.prev tbody tr:hover td{background:var(--s3);}
           <rect x="36" y="118" width="128" height="8" rx="4" fill="url(#silverMain)" stroke="#909090" stroke-width=".5"/>
         </g>
       </svg>
+      <div class="hover-hint">hover to open</div>
     </div>
 
     <!-- TWO DOTS — labels + delivery -->
@@ -350,9 +325,28 @@ function clearLabels(){document.getElementById('labelInput').value='';document.g
 
 const CC={packagingType:'flyer',weight:'400',shipmentLength:'15',shipmentBreadth:'8',shipmentHeight:'5',paymentMode:'Prepaid',packageAmount:'2499',codAmount:'0',product:'Skincare',vendorPickup:'Formial Labs',returnAddress:'No. 181, K.B.A.R road, Austin town, Bengaluru 560047',returnPin:'560047',shippingMode:'Express',fragile:'False',country:'India',sellerName:'Formial Skin Care',sellerAddress:'No. 181, K.B.A.R road, Austin town, Bengaluru 560047'};
 const COLS=['Waybill','Reference No','Consignee Name','City','State','Country','Address','Pincode','Phone','Mobile','Weight','Shipment Length','Shipment Breadth','Shipment Height','Packaging Type','Payment Mode','Package Amount','Cod Amount','Product to be Shipped','Vendor Pickup Location','Return Address','Return Pin','Shipping Mode','fragile_shipment','alternate_phone','shipment_type','master_id','mps_children','mps_amount','Seller Name','Seller Address','Seller CST No','Seller TIN','Invoice No','Invoice Date','Quantity','Commodity Value','Tax Value','Category of Goods','Seller_GST_TIN','HSN_Code','Return Reason','EWBN','protect_category_id','Select_NDD'];
-const PC=['Consignee Name','Address','City','State','Pincode','Mobile'];
-function pa(raw){let line=raw.trim();if(!line)return null;const pm=line.match(/\b(\d{10})\s*$/);const mob=pm?pm[1]:'';if(pm)line=line.slice(0,pm.index).trim();const pcm=line.match(/[-–]\s*(\d{6})\s*$/);const pin=pcm?pcm[1]:'';if(pcm)line=line.slice(0,pcm.index).trim();const ci=line.indexOf(',');let name='',addr='';if(ci===-1){const nm=line.match(/^([A-Za-z][A-Za-z\s]+?)\s+(\S.*)$/);name=nm?nm[1].trim():line;addr=nm?nm[2].trim():'';}else{const before=line.slice(0,ci).trim(),after=line.slice(ci+1).trim();const nm=before.match(/^([A-Za-z][A-Za-z\s]+?)\s+(\S.*)$/);if(nm){name=nm[1].trim();addr=nm[2]+', '+after;}else{name=before;addr=after;}}const pts=addr.split(',').map(s=>s.trim()).filter(Boolean);let city='',state='',ca=addr;if(pts.length>=3){state=pts[pts.length-1];city=pts[pts.length-2];ca=pts.slice(0,pts.length-2).join(', ');}else if(pts.length===2){city=pts[0];state=pts[1];ca='';}else if(pts.length===1){city=pts[0];ca='';}const tc=s=>s.replace(/\b\w/g,c=>c.toUpperCase());return{name:tc(name.trim()),address:ca.trim(),city:tc(city.trim()),state:tc(state.trim()),pincode:pin,mobile:mob};}
-function br(lines){const rows=[],w=[];lines.forEach((line,idx)=>{if(!line.trim())return;const p=pa(line);if(!p){w.push(`Line ${idx+1}`);return;}const r={};COLS.forEach(c=>r[c]='');r['Consignee Name']=p.name;r['Address']=p.address;r['City']=p.city;r['State']=p.state;r['Pincode']=p.pincode;r['Mobile']=p.mobile;r['Country']=CC.country;r['Weight']=CC.weight;r['Shipment Length']=CC.shipmentLength;r['Shipment Breadth']=CC.shipmentBreadth;r['Shipment Height']=CC.shipmentHeight;r['Packaging Type']=CC.packagingType;r['Payment Mode']=CC.paymentMode;r['Package Amount']=CC.packageAmount;r['Cod Amount']=CC.codAmount;r['Product to be Shipped']=CC.product;r['Vendor Pickup Location']=CC.vendorPickup;r['Return Address']=CC.returnAddress;r['Return Pin']=CC.returnPin;r['Shipping Mode']=CC.shippingMode;r['fragile_shipment']=CC.fragile;r['Seller Name']=CC.sellerName;r['Seller Address']=CC.sellerAddress;rows.push(r);});return{rows,w};}
+const PC=['Consignee Name','Address','Pincode','Mobile'];
+
+function pa(raw){
+  let line=raw.trim();
+  if(!line)return null;
+  // 1. Strip mobile from end — trailing 10-digit number
+  const pm=line.match(/\b(\d{10})\s*$/);
+  const mobile=pm?pm[1]:'';
+  if(pm)line=line.slice(0,pm.index).trim();
+  // 2. Extract pincode for Pincode column — keep it in the address string
+  const pcm=line.match(/[-–]\s*(\d{6})\b/);
+  const pincode=pcm?pcm[1]:'';
+  // 3. First two words = name, everything else = full address (pincode stays)
+  const words=line.trim().split(/\s+/);
+  const name=words.slice(0,2).join(' ');
+  const address=words.slice(2).join(' ');
+  const tc=s=>s.replace(/\b\w/g,c=>c.toUpperCase());
+  return{name:tc(name),address:address.trim(),city:'',state:'',pincode,mobile};
+}
+
+function br(lines){const rows=[],w=[];lines.forEach((line,idx)=>{if(!line.trim())return;const p=pa(line);if(!p){w.push(`Line ${idx+1}`);return;}const r={};COLS.forEach(c=>r[c]='');r['Consignee Name']=p.name;r['Address']=p.address;r['City']='';r['State']='';r['Pincode']=p.pincode;r['Mobile']=p.mobile;r['Country']=CC.country;r['Weight']=CC.weight;r['Shipment Length']=CC.shipmentLength;r['Shipment Breadth']=CC.shipmentBreadth;r['Shipment Height']=CC.shipmentHeight;r['Packaging Type']=CC.packagingType;r['Payment Mode']=CC.paymentMode;r['Package Amount']=CC.packageAmount;r['Cod Amount']=CC.codAmount;r['Product to be Shipped']=CC.product;r['Vendor Pickup Location']=CC.vendorPickup;r['Return Address']=CC.returnAddress;r['Return Pin']=CC.returnPin;r['Shipping Mode']=CC.shippingMode;r['fragile_shipment']=CC.fragile;r['Seller Name']=CC.sellerName;r['Seller Address']=CC.sellerAddress;rows.push(r);});return{rows,w};}
+
 function previewShip(){const lines=document.getElementById('shipInput').value.trim().split('\n').filter(l=>l.trim());const h=document.getElementById('shipHint');if(!lines.length){h.textContent='paste addresses first';h.className='hint err';return;}const{rows,w}=br(lines);if(!rows.length){h.textContent='could not parse';h.className='hint err';return;}const thead=document.querySelector('#prevTbl thead');const tbody=document.querySelector('#prevTbl tbody');thead.innerHTML='<tr>'+PC.map(c=>`<th>${c}</th>`).join('')+'</tr>';tbody.innerHTML=rows.map(r=>'<tr>'+PC.map(c=>`<td>${r[c]??''}</td>`).join('')+'</tr>').join('');document.getElementById('shipPreview').style.display='block';h.className='hint ok-b';h.textContent=`✓ ${rows.length} shipment${rows.length>1?'s':''} ready`+(w.length?` · ⚠ ${w.length} warnings`:'');}
 function downloadShipXLSX(){const lines=document.getElementById('shipInput').value.trim().split('\n').filter(l=>l.trim());const h=document.getElementById('shipHint');if(!lines.length){h.textContent='paste addresses first';h.className='hint err';return;}const{rows}=br(lines);if(!rows.length){h.textContent='could not parse';h.className='hint err';return;}const aoa=[COLS,...rows.map(r=>COLS.map(c=>r[c]??''))];const wb=XLSX.utils.book_new();const ws=XLSX.utils.aoa_to_sheet(aoa);ws['!cols']=COLS.map(c=>({wch:Math.min(Math.max(c.length+3,14),42)}));for(let C2=0;C2<COLS.length;C2++){const a=XLSX.utils.encode_cell({r:0,c:C2});if(!ws[a])continue;ws[a].s={font:{name:'Arial',sz:9,bold:true,color:{rgb:'FFFFFF'}},fill:{fgColor:{rgb:'1E3A8A'}},alignment:{horizontal:'center',vertical:'center',wrapText:true}};}for(let R=1;R<aoa.length;R++){for(let C2=0;C2<COLS.length;C2++){const a=XLSX.utils.encode_cell({r:R,c:C2});if(!ws[a])ws[a]={v:'',t:'s'};ws[a].s={font:{name:'Arial',sz:9},fill:{fgColor:{rgb:R%2===0?'EFF6FF':'FFFFFF'}},alignment:{vertical:'center'}};}}ws['!rows']=[{hpt:28}];XLSX.utils.book_append_sheet(wb,ws,'Shipments');XLSX.writeFile(wb,`delhivery_${new Date().toISOString().slice(0,10)}.xlsx`);h.className='hint ok-b';h.textContent=`✓ ${rows.length} shipments exported`;showToast(`${rows.length} shipments downloaded!`);}
 function clearShip(){document.getElementById('shipInput').value='';document.getElementById('shipHint').textContent='';document.getElementById('shipHint').className='hint';document.getElementById('shipPreview').style.display='none';}
