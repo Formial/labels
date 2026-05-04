@@ -36,7 +36,6 @@ html,body{height:100%;background:var(--blk);color:var(--white);font-family:var(-
 .brand-main em{font-style:normal;color:var(--orange);}
 .brand-sub{font-family:var(--mono);font-size:10px;color:var(--faint);letter-spacing:8px;text-transform:uppercase;text-align:center;margin-top:8px;margin-bottom:24px;}
 
-/* bottle */
 .bottle-scene{width:200px;height:380px;position:relative;cursor:pointer;margin-bottom:16px;}
 .bottle-scene:hover .cap-lid{transform:translateY(-72px) rotate(-2deg);opacity:0;}
 .bottle-scene:hover .pump-rings{opacity:1;transform:translateY(0);}
@@ -44,7 +43,6 @@ html,body{height:100%;background:var(--blk);color:var(--white);font-family:var(-
 .pump-rings{opacity:0;transform:translateY(4px);transition:opacity .4s ease .25s,transform .4s ease .25s;}
 .hover-hint{text-align:center;font-family:var(--mono);font-size:8px;color:var(--faint);letter-spacing:2.5px;text-transform:uppercase;margin-top:-8px;margin-bottom:8px;}
 
-/* dots */
 .dots-row{display:flex;align-items:center;gap:40px;}
 .dot-item{display:flex;flex-direction:column;align-items:center;gap:8px;cursor:pointer;transition:transform .2s;}
 .dot-item:hover{transform:translateY(-3px);}
@@ -70,7 +68,6 @@ html,body{height:100%;background:var(--blk);color:var(--white);font-family:var(-
 .body::-webkit-scrollbar{width:3px;}
 .body::-webkit-scrollbar-thumb{background:var(--s3);border-radius:2px;}
 
-/* card */
 .card{background:var(--s1);border:1px solid var(--border2);border-radius:20px;padding:30px;margin-bottom:20px;}
 .eyebrow{font-family:var(--mono);font-size:10px;letter-spacing:3px;text-transform:uppercase;margin-bottom:10px;}
 .eyebrow.orange{color:var(--orange);}
@@ -91,15 +88,29 @@ textarea::placeholder{color:var(--faint);}
 .btn-cyan:hover{box-shadow:0 6px 28px rgba(0,229,255,.35);transform:translateY(-1px);}
 .btn-ghost{background:transparent;color:var(--dim);border:1px solid var(--border2);}
 .btn-ghost:hover{border-color:#ffffff35;color:var(--white);}
+.btn:disabled{opacity:.4;cursor:not-allowed;transform:none !important;box-shadow:none !important;}
 
 .hint{font-family:var(--mono);font-size:11px;margin-top:12px;min-height:14px;font-weight:500;}
 .hint.ok-o{color:var(--orange);}
 .hint.ok-b{color:var(--cyan);}
 .hint.err{color:var(--pink);}
+.hint.loading{color:var(--faint);}
+
+/* lookup progress */
+.lookup-bar{margin-top:14px;display:none;}
+.lookup-bar.visible{display:block;}
+.lookup-label{font-family:var(--mono);font-size:10px;color:var(--faint);letter-spacing:1.5px;margin-bottom:6px;}
+.lookup-track{background:var(--s3);border-radius:100px;height:3px;overflow:hidden;}
+.lookup-fill{height:100%;background:var(--cyan);border-radius:100px;transition:width .3s ease;width:0%;}
+.lookup-items{margin-top:10px;display:flex;flex-direction:column;gap:4px;max-height:120px;overflow-y:auto;}
+.lookup-row{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:10px;}
+.lookup-row .lpin{color:var(--faint);width:52px;flex-shrink:0;}
+.lookup-row .lres{color:var(--white);}
+.lookup-row .lres.fail{color:var(--pink);}
 
 /* preview table */
 .prev-wrap{overflow-x:auto;border:1px solid var(--border2);border-radius:12px;margin-top:16px;max-height:240px;overflow-y:auto;}
-table.prev{width:100%;border-collapse:collapse;min-width:600px;}
+table.prev{width:100%;border-collapse:collapse;min-width:700px;}
 table.prev thead th{font-family:var(--mono);font-size:9px;color:var(--faint);text-transform:uppercase;padding:8px 12px;border-bottom:1px solid var(--border2);text-align:left;white-space:nowrap;background:var(--s2);position:sticky;top:0;letter-spacing:.5px;}
 table.prev tbody td{padding:9px 12px;border-bottom:1px solid #111116;font-family:var(--mono);font-size:11.5px;white-space:nowrap;color:var(--white);}
 table.prev tbody tr:hover td{background:var(--s3);}
@@ -114,12 +125,9 @@ table.prev tbody tr:hover td{background:var(--s3);}
 <div class="page active" id="home">
   <div class="blob b1"></div>
   <div class="blob b2"></div>
-
   <div class="home-stack">
     <div class="brand-main">FORMIAL<em>.</em></div>
     <div class="brand-sub">Labs Pharmacy</div>
-
-    <!-- BOTTLE — capped, cap lifts on hover -->
     <div class="bottle-scene">
       <svg width="200" height="380" viewBox="0 0 200 380" xmlns="http://www.w3.org/2000/svg">
         <defs>
@@ -133,44 +141,32 @@ table.prev tbody tr:hover td{background:var(--s3);}
           </linearGradient>
           <linearGradient id="glassSheen" x1="0%" y1="0%" x2="100%" y2="0%">
             <stop offset="0%" stop-color="transparent"/>
-            <stop offset="22%" stop-color="rgba(255,255,255,.04)"/>
             <stop offset="42%" stop-color="rgba(255,255,255,.2)"/>
-            <stop offset="60%" stop-color="rgba(255,255,255,.05)"/>
             <stop offset="100%" stop-color="transparent"/>
           </linearGradient>
           <linearGradient id="silverMain" x1="0%" y1="0%" x2="100%" y2="0%">
             <stop offset="0%" stop-color="#545454"/>
-            <stop offset="18%" stop-color="#a5a5a5"/>
             <stop offset="40%" stop-color="#dadada"/>
-            <stop offset="56%" stop-color="#ebebeb"/>
             <stop offset="74%" stop-color="#bebebe"/>
-            <stop offset="90%" stop-color="#848484"/>
             <stop offset="100%" stop-color="#484848"/>
           </linearGradient>
           <linearGradient id="silverMid" x1="0%" y1="0%" x2="100%" y2="0%">
             <stop offset="0%" stop-color="#3a3a3a"/>
-            <stop offset="28%" stop-color="#868686"/>
             <stop offset="52%" stop-color="#b2b2b2"/>
-            <stop offset="76%" stop-color="#6e6e6e"/>
             <stop offset="100%" stop-color="#2e2e2e"/>
           </linearGradient>
           <linearGradient id="silverLight" x1="0%" y1="0%" x2="100%" y2="100%">
             <stop offset="0%" stop-color="#d8d8d8"/>
-            <stop offset="45%" stop-color="#ececec"/>
             <stop offset="100%" stop-color="#8c8c8c"/>
           </linearGradient>
           <linearGradient id="capBody" x1="0%" y1="0%" x2="100%" y2="0%">
             <stop offset="0%" stop-color="#505050"/>
-            <stop offset="15%" stop-color="#9a9a9a"/>
             <stop offset="35%" stop-color="#cecece"/>
             <stop offset="52%" stop-color="#e2e2e2"/>
-            <stop offset="68%" stop-color="#d0d0d0"/>
-            <stop offset="85%" stop-color="#969696"/>
             <stop offset="100%" stop-color="#484848"/>
           </linearGradient>
           <linearGradient id="capTopFace" x1="0%" y1="0%" x2="100%" y2="100%">
             <stop offset="0%" stop-color="#e8e8e8"/>
-            <stop offset="50%" stop-color="#d2d2d2"/>
             <stop offset="100%" stop-color="#909090"/>
           </linearGradient>
           <linearGradient id="labelBg" x1="0%" y1="0%" x2="100%" y2="0%">
@@ -179,19 +175,13 @@ table.prev tbody tr:hover td{background:var(--s3);}
             <stop offset="100%" stop-color="#030710"/>
           </linearGradient>
         </defs>
-
         <ellipse cx="100" cy="376" rx="44" ry="5" fill="#000" opacity=".5"/>
         <path d="M 32 148 Q 30 290 32 352 Q 100 362 168 352 Q 170 290 168 148 Z" fill="url(#glassBody)" stroke="#1a3a60" stroke-width="1.2"/>
         <path d="M 32 148 Q 30 290 32 352 Q 100 362 168 352 Q 170 290 168 148 Z" fill="url(#glassSheen)"/>
         <rect x="32" y="148" width="15" height="204" rx="7" fill="#020a12" opacity=".68"/>
         <rect x="153" y="148" width="15" height="204" rx="7" fill="#020a12" opacity=".62"/>
-        <ellipse cx="100" cy="350" rx="60" ry="8" fill="rgba(100,160,210,.05)"/>
         <rect x="58" y="116" width="84" height="38" rx="6" fill="url(#glassBody)" stroke="#1a3a60" stroke-width="1"/>
-        <rect x="68" y="118" width="24" height="34" rx="4" fill="rgba(255,255,255,.06)"/>
-
-        <!-- label -->
         <rect x="40" y="172" width="120" height="136" rx="7" fill="url(#labelBg)" stroke="#102030" stroke-width=".6"/>
-        <rect x="44" y="176" width="112" height="128" rx="5" fill="none" stroke="#081828" stroke-width=".5"/>
         <text x="100" y="192" text-anchor="middle" font-family="Space Grotesk,sans-serif" font-size="7" fill="#1c3858" letter-spacing="3">NAME</text>
         <line x1="48" y1="195" x2="152" y2="195" stroke="#081828" stroke-width=".5"/>
         <text x="100" y="218" text-anchor="middle" font-family="Barlow Condensed,sans-serif" font-size="26" font-weight="800" fill="#c8e4f6" letter-spacing="1.5">Emma's</text>
@@ -201,54 +191,29 @@ table.prev tbody tr:hover td{background:var(--s3);}
         <text x="100" y="264" text-anchor="middle" font-family="DM Mono,monospace" font-size="8.5" fill="#3e7aaa">4% Azelaic acid</text>
         <text x="100" y="278" text-anchor="middle" font-family="DM Mono,monospace" font-size="8.5" fill="#3e7aaa">4% Niacinamide</text>
         <line x1="48" y1="284" x2="152" y2="284" stroke="#081828" stroke-width=".5"/>
-
-        <!-- orange accents -->
         <circle cx="156" cy="175" r="3" fill="#ff5500" opacity=".7"/>
         <line x1="32" y1="162" x2="40" y2="162" stroke="#ff5500" stroke-width="2.5" opacity=".5"/>
         <line x1="160" y1="162" x2="168" y2="162" stroke="#ff5500" stroke-width="2.5" opacity=".5"/>
-
-        <!-- 3-tier pump rings — visible after cap lifts -->
         <g class="pump-rings">
           <rect x="40" y="90" width="120" height="34" rx="7" fill="url(#silverMain)" stroke="#8a8a8a" stroke-width=".8"/>
           <ellipse cx="100" cy="91" rx="60" ry="8.5" fill="#d4d4d4" stroke="#bcbcbc" stroke-width=".7"/>
-          <ellipse cx="100" cy="124" rx="60" ry="6" fill="#606060" opacity=".35"/>
-          <line x1="44" y1="97" x2="156" y2="97" stroke="#585858" stroke-width=".6" opacity=".45"/>
-          <line x1="44" y1="118" x2="156" y2="118" stroke="#585858" stroke-width=".5" opacity=".38"/>
           <text x="100" y="109" text-anchor="middle" font-family="Barlow Condensed,sans-serif" font-size="10" font-weight="700" fill="#1c2830" letter-spacing="4" opacity=".8">FORMIAL LABS</text>
-          <rect x="48" y="93" width="26" height="28" rx="4" fill="rgba(255,255,255,.11)"/>
           <rect x="56" y="60" width="88" height="34" rx="7" fill="url(#silverMid)" stroke="#707070" stroke-width=".8"/>
           <ellipse cx="100" cy="61" rx="44" ry="8" fill="#bebebe" stroke="#a6a6a6" stroke-width=".6"/>
-          <ellipse cx="100" cy="94" rx="44" ry="5.5" fill="#484848" opacity=".3"/>
-          <line x1="60" y1="68" x2="140" y2="68" stroke="#383838" stroke-width=".5" opacity=".5"/>
-          <line x1="60" y1="86" x2="140" y2="86" stroke="#383838" stroke-width=".5" opacity=".38"/>
-          <rect x="62" y="63" width="20" height="26" rx="4" fill="rgba(255,255,255,.09)"/>
           <rect x="74" y="26" width="52" height="38" rx="10" fill="url(#silverLight)" stroke="#aeaeae" stroke-width=".8"/>
           <ellipse cx="100" cy="28" rx="26" ry="9" fill="#e0e0e0" stroke="#cacaca" stroke-width=".7"/>
-          <ellipse cx="100" cy="28" rx="16" ry="5" fill="#d0d0d0" stroke="#b8b8b8" stroke-width=".5"/>
-          <ellipse cx="100" cy="64" rx="26" ry="5.5" fill="#545454" opacity=".28"/>
-          <line x1="78" y1="36" x2="122" y2="36" stroke="#8c8c8c" stroke-width=".6" opacity=".55"/>
-          <line x1="78" y1="54" x2="122" y2="54" stroke="#8c8c8c" stroke-width=".5" opacity=".4"/>
-          <rect x="78" y="29" width="14" height="30" rx="4" fill="rgba(255,255,255,.14)"/>
         </g>
-
-        <!-- CAP — tall solid silver cylinder with F—L on top -->
         <g class="cap-lid">
           <rect x="36" y="20" width="128" height="106" rx="10" fill="url(#capBody)" stroke="#8c8c8c" stroke-width="1"/>
           <ellipse cx="100" cy="22" rx="64" ry="12" fill="url(#capTopFace)" stroke="#d0d0d0" stroke-width=".9"/>
-          <path d="M 52 18 Q 100 10 148 18" stroke="rgba(255,255,255,.35)" stroke-width="1.5" fill="none"/>
           <text x="100" y="26" text-anchor="middle" font-family="Barlow Condensed,sans-serif" font-size="14" font-weight="700" fill="#2a3a44" letter-spacing="4" opacity=".75">F—L</text>
           <rect x="44" y="26" width="22" height="96" rx="5" fill="rgba(255,255,255,.13)"/>
-          <line x1="38" y1="52" x2="162" y2="52" stroke="rgba(255,255,255,.08)" stroke-width="1"/>
-          <line x1="38" y1="88" x2="162" y2="88" stroke="rgba(0,0,0,.12)" stroke-width="1"/>
-          <ellipse cx="100" cy="126" rx="64" ry="8" fill="#3c3c3c" opacity=".5"/>
           <ellipse cx="100" cy="124" rx="62" ry="5" fill="#c0c0c0" stroke="#a8a8a8" stroke-width=".5"/>
           <rect x="36" y="118" width="128" height="8" rx="4" fill="url(#silverMain)" stroke="#909090" stroke-width=".5"/>
         </g>
       </svg>
       <div class="hover-hint">hover to open</div>
     </div>
-
-    <!-- TWO DOTS — labels + delivery -->
     <div class="dots-row">
       <div class="dot-item" onclick="goto('labels')">
         <div class="dot labels"></div>
@@ -294,19 +259,43 @@ Areeba Khan, 31Y|||Tretinoin 0.025% + Clindamycin 1% + Spironolactone 5%|||Apply
   </div>
   <div class="body">
     <div class="card">
-      <div class="eyebrow blue">03 — Shipment</div>
-      <div class="card-title">Delhivery Bulk → .xlsx</div>
-      <div class="card-desc">One recipient per line.<br><code>Full Name address, Area, City, State - Pincode Mobile</code></div>
+      <div class="eyebrow blue">03 — Shipment Upload</div>
+      <div class="card-title">Shiprocket Bulk → .csv</div>
+      <div class="card-desc">
+        One recipient per line. City &amp; State are auto-looked up from pincode.<br>
+        <code>Full Name  full address including area, City, State - Pincode  Mobile</code>
+      </div>
       <textarea id="shipInput" style="min-height:160px;" placeholder="Akash Hota 4/02 4th floor block-b4, Sundarpada, Bhubaneswar, Odisha - 751002 9337561271
 Priya Sharma Flat 3B Rose Garden, Koramangala, Bangalore, Karnataka - 560034 9876543210
 Rahul Verma 12 MG Road Civil Lines, New Delhi, Delhi - 110001 9123456789"></textarea>
-      <div class="btns">
-        <button class="btn btn-ghost" onclick="previewShip()">👁 Preview</button>
-        <button class="btn btn-cyan" onclick="downloadShipXLSX()">↓ Download .xlsx</button>
+
+      <!-- order number prefix config -->
+      <div style="display:flex;align-items:center;gap:12px;margin-top:14px;flex-wrap:wrap;">
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span style="font-family:var(--mono);font-size:11px;color:var(--faint);">Order prefix</span>
+          <input id="orderPrefix" value="FL" style="width:60px;background:var(--s2);border:1px solid var(--border2);border-radius:8px;color:var(--white);font-family:var(--mono);font-size:12px;padding:6px 10px;outline:none;text-transform:uppercase;">
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span style="font-family:var(--mono);font-size:11px;color:var(--faint);">Start #</span>
+          <input id="orderStart" type="number" value="1" min="1" style="width:68px;background:var(--s2);border:1px solid var(--border2);border-radius:8px;color:var(--white);font-family:var(--mono);font-size:12px;padding:6px 10px;outline:none;">
+        </div>
+      </div>
+
+      <div class="btns" style="margin-top:14px;">
+        <button class="btn btn-ghost" id="previewBtn" onclick="previewShip()">👁 Preview</button>
+        <button class="btn btn-cyan" id="downloadBtn" onclick="downloadShipCSV()">↓ Download .csv</button>
         <button class="btn btn-ghost" onclick="clearShip()">Clear</button>
       </div>
       <div class="hint" id="shipHint"></div>
-      <div id="shipPreview" style="display:none;">
+
+      <!-- lookup progress bar -->
+      <div class="lookup-bar" id="lookupBar">
+        <div class="lookup-label">LOOKING UP PINCODES</div>
+        <div class="lookup-track"><div class="lookup-fill" id="lookupFill"></div></div>
+        <div class="lookup-items" id="lookupItems"></div>
+      </div>
+
+      <div id="shipPreview" style="display:none;margin-top:16px;">
         <div class="prev-wrap"><table class="prev" id="prevTbl"><thead></thead><tbody></tbody></table></div>
       </div>
     </div>
@@ -316,41 +305,319 @@ Rahul Verma 12 MG Road Civil Lines, New Delhi, Delhi - 110001 9123456789"></text
 <div class="toast" id="toast"></div>
 
 <script>
+/* ══ NAV ══ */
 function goto(t){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById('page-'+t).classList.add('active');}
 function goHome(){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById('home').classList.add('active');}
 
-function parseLabels(raw){const recs=[];for(let line of raw.trim().split('\n')){line=line.trim().replace(/^"+|"+$/g,'');if(!line)continue;const parts=line.split('|||').map(s=>s.trim()).filter(Boolean);if(parts.length<2)continue;const na=parts[0];let formula='',dir='Use 1-2 pumps at night as directed',comp='',exp='',ph='';for(const p of parts){if(p.includes('%')&&!p.toLowerCase().includes('date')){formula=p;continue;}if(p.toLowerCase().startsWith('use ')){dir=p;continue;}const mc=p.match(/date of compounding[:\s]+(\S+)/i);if(mc){comp=mc[1];continue;}const me=p.match(/expiry date[:\s]+(\S+)/i);if(me){exp=me[1];continue;}if(p.toLowerCase().includes('pharmacist')){ph=p;}}if(!formula)continue;recs.push({na,formula,dir,comp,exp,ph:ph||'Formial Labs Pharmacist'});}return recs;}
-function downloadLabels(){const raw=document.getElementById('labelInput').value.trim();const h=document.getElementById('labelHint');if(!raw){h.textContent='paste label data first';h.className='hint err';return;}const recs=parseLabels(raw);if(!recs.length){h.textContent='no valid labels parsed';h.className='hint err';return;}const s=[...recs].sort((a,b)=>a.formula.localeCompare(b.formula));const d=[['Name, Age','Content / Concentration','Directions','Compounding Date','Expiry Date','Pharmacist']];for(const r of s){d.push([r.na,r.formula.split('+').map(x=>x.trim()).join('  '),r.dir,r.comp?`Date of Compounding: ${r.comp}`:'',r.exp?`Date of Expiry: ${r.exp}`:'',r.ph]);}const wb=XLSX.utils.book_new();const ws=XLSX.utils.aoa_to_sheet(d);ws['!cols']=[28,60,34,30,26,30].map(w=>({wch:w}));const hF={fgColor:{rgb:'1F4E79'}};const hFt={name:'Arial',sz:10,bold:true,color:{rgb:'FFFFFF'}};for(let C=0;C<6;C++){const a=XLSX.utils.encode_cell({r:0,c:C});if(!ws[a])continue;ws[a].s={font:hFt,fill:hF,alignment:{wrapText:true,vertical:'center',horizontal:'center'}};}for(let r=1;r<d.length;r++){for(let c=0;c<6;c++){const a=XLSX.utils.encode_cell({r,c});if(!ws[a])ws[a]={v:'',t:'s'};ws[a].s={font:{name:'Arial',sz:10},fill:{fgColor:{rgb:r%2===0?'F0F6FA':'FFFFFF'}},alignment:{wrapText:true,vertical:'center'}};}}XLSX.utils.book_append_sheet(wb,ws,'Labels');XLSX.writeFile(wb,'pharmacy_labels.xlsx');h.className='hint ok-o';h.textContent=`✓ ${recs.length} labels exported`;showToast(`${recs.length} labels downloaded!`);}
-function clearLabels(){document.getElementById('labelInput').value='';document.getElementById('labelHint').textContent='';document.getElementById('labelHint').className='hint';}
-
-const CC={packagingType:'flyer',weight:'400',shipmentLength:'15',shipmentBreadth:'8',shipmentHeight:'5',paymentMode:'Prepaid',packageAmount:'2499',codAmount:'0',product:'Skincare',vendorPickup:'Formial Labs',returnAddress:'No. 181, K.B.A.R road, Austin town, Bengaluru 560047',returnPin:'560047',shippingMode:'Express',fragile:'False',country:'India',sellerName:'Formial Skin Care',sellerAddress:'No. 181, K.B.A.R road, Austin town, Bengaluru 560047'};
-const COLS=['Waybill','Reference No','Consignee Name','City','State','Country','Address','Pincode','Phone','Mobile','Weight','Shipment Length','Shipment Breadth','Shipment Height','Packaging Type','Payment Mode','Package Amount','Cod Amount','Product to be Shipped','Vendor Pickup Location','Return Address','Return Pin','Shipping Mode','fragile_shipment','alternate_phone','shipment_type','master_id','mps_children','mps_amount','Seller Name','Seller Address','Seller CST No','Seller TIN','Invoice No','Invoice Date','Quantity','Commodity Value','Tax Value','Category of Goods','Seller_GST_TIN','HSN_Code','Return Reason','EWBN','protect_category_id','Select_NDD'];
-const PC=['Consignee Name','Address','Pincode','Mobile'];
-
-function pa(raw){
-  let line=raw.trim();
-  if(!line)return null;
-  // 1. Strip mobile — trailing 10-digit number
-  const pm=line.match(/\b(\d{10})\s*$/);
-  const mobile=pm?pm[1]:'';
-  if(pm)line=line.slice(0,pm.index).trim();
-  // 2. Extract pincode — 6-digit number (with or without preceding dash)
-  //    Match last 6-digit group in the remaining line
-  const pcm=line.match(/(?:[-–]\s*)?(\d{6})(?:\s*$|\b)/);
-  const pincode=pcm?pcm[1]:'';
-  // 3. First two words = name, rest = full address (pincode stays in string)
-  const words=line.trim().split(/\s+/);
-  const name=words.slice(0,2).join(' ');
-  const address=words.slice(2).join(' ');
-  const tc=s=>s.replace(/\b\w/g,c=>c.toUpperCase());
-  return{name:tc(name),address:address.trim(),pincode,mobile};
+/* ══ LABELS ══ */
+function parseLabels(raw){
+  const recs=[];
+  for(let line of raw.trim().split('\n')){
+    line=line.trim().replace(/^"+|"+$/g,'');
+    if(!line)continue;
+    const parts=line.split('|||').map(s=>s.trim()).filter(Boolean);
+    if(parts.length<2)continue;
+    const na=parts[0];
+    let formula='',dir='Use 1-2 pumps at night as directed',comp='',exp='',ph='';
+    for(const p of parts){
+      if(p.includes('%')&&!p.toLowerCase().includes('date')){formula=p;continue;}
+      if(p.toLowerCase().startsWith('use ')||p.toLowerCase().startsWith('apply ')){dir=p;continue;}
+      const mc=p.match(/date of compounding[:\s]+(\S+)/i);if(mc){comp=mc[1];continue;}
+      const me=p.match(/expiry date[:\s]+(\S+)/i);if(me){exp=me[1];continue;}
+      if(p.toLowerCase().includes('pharmacist')){ph=p;}
+    }
+    if(!formula)continue;
+    recs.push({na,formula,dir,comp,exp,ph:ph||'Formial Labs Pharmacist'});
+  }
+  return recs;
 }
 
-function br(lines){const rows=[],w=[];lines.forEach((line,idx)=>{if(!line.trim())return;const p=pa(line);if(!p){w.push(`Line ${idx+1}`);return;}const r={};COLS.forEach(c=>r[c]='');r['Consignee Name']=p.name;r['Address']=p.address;r['City']='';r['State']='';r['Pincode']=p.pincode;r['Mobile']=p.mobile;r['Country']=CC.country;r['Weight']=CC.weight;r['Shipment Length']=CC.shipmentLength;r['Shipment Breadth']=CC.shipmentBreadth;r['Shipment Height']=CC.shipmentHeight;r['Packaging Type']=CC.packagingType;r['Payment Mode']=CC.paymentMode;r['Package Amount']=CC.packageAmount;r['Cod Amount']=CC.codAmount;r['Product to be Shipped']=CC.product;r['Vendor Pickup Location']=CC.vendorPickup;r['Return Address']=CC.returnAddress;r['Return Pin']=CC.returnPin;r['Shipping Mode']=CC.shippingMode;r['fragile_shipment']=CC.fragile;r['Seller Name']=CC.sellerName;r['Seller Address']=CC.sellerAddress;rows.push(r);});return{rows,w};}
+function downloadLabels(){
+  const raw=document.getElementById('labelInput').value.trim();
+  const h=document.getElementById('labelHint');
+  if(!raw){h.textContent='paste label data first';h.className='hint err';return;}
+  const recs=parseLabels(raw);
+  if(!recs.length){h.textContent='no valid labels parsed';h.className='hint err';return;}
+  const s=[...recs].sort((a,b)=>a.formula.localeCompare(b.formula));
+  const d=[['Name, Age','Content / Concentration','Directions','Compounding Date','Expiry Date','Pharmacist']];
+  for(const r of s){
+    d.push([r.na,r.formula.split('+').map(x=>x.trim()).join('  '),r.dir,
+      r.comp?`Date of Compounding: ${r.comp}`:'',
+      r.exp?`Date of Expiry: ${r.exp}`:'',r.ph]);
+  }
+  const wb=XLSX.utils.book_new();
+  const ws=XLSX.utils.aoa_to_sheet(d);
+  ws['!cols']=[28,60,34,30,26,30].map(w=>({wch:w}));
+  const hF={fgColor:{rgb:'1F4E79'}};
+  const hFt={name:'Arial',sz:10,bold:true,color:{rgb:'FFFFFF'}};
+  for(let C=0;C<6;C++){
+    const a=XLSX.utils.encode_cell({r:0,c:C});
+    if(!ws[a])continue;
+    ws[a].s={font:hFt,fill:hF,alignment:{wrapText:true,vertical:'center',horizontal:'center'}};
+  }
+  for(let r=1;r<d.length;r++){
+    for(let c=0;c<6;c++){
+      const a=XLSX.utils.encode_cell({r,c});
+      if(!ws[a])ws[a]={v:'',t:'s'};
+      ws[a].s={font:{name:'Arial',sz:10},fill:{fgColor:{rgb:r%2===0?'F0F6FA':'FFFFFF'}},alignment:{wrapText:true,vertical:'center'}};
+    }
+  }
+  XLSX.utils.book_append_sheet(wb,ws,'Labels');
+  XLSX.writeFile(wb,'pharmacy_labels.xlsx');
+  h.className='hint ok-o';h.textContent=`✓ ${recs.length} labels exported`;
+  showToast(`${recs.length} labels downloaded!`);
+}
+function clearLabels(){document.getElementById('labelInput').value='';document.getElementById('labelHint').textContent='';document.getElementById('labelHint').className='hint';}
 
-function previewShip(){const lines=document.getElementById('shipInput').value.trim().split('\n').filter(l=>l.trim());const h=document.getElementById('shipHint');if(!lines.length){h.textContent='paste addresses first';h.className='hint err';return;}const{rows,w}=br(lines);if(!rows.length){h.textContent='could not parse';h.className='hint err';return;}const thead=document.querySelector('#prevTbl thead');const tbody=document.querySelector('#prevTbl tbody');thead.innerHTML='<tr>'+PC.map(c=>`<th>${c}</th>`).join('')+'</tr>';tbody.innerHTML=rows.map(r=>'<tr>'+PC.map(c=>`<td>${r[c]??''}</td>`).join('')+'</tr>').join('');document.getElementById('shipPreview').style.display='block';h.className='hint ok-b';h.textContent=`✓ ${rows.length} shipment${rows.length>1?'s':''} ready`+(w.length?` · ⚠ ${w.length} warnings`:'');}
-function downloadShipXLSX(){const lines=document.getElementById('shipInput').value.trim().split('\n').filter(l=>l.trim());const h=document.getElementById('shipHint');if(!lines.length){h.textContent='paste addresses first';h.className='hint err';return;}const{rows}=br(lines);if(!rows.length){h.textContent='could not parse';h.className='hint err';return;}const aoa=[COLS,...rows.map(r=>COLS.map(c=>r[c]??''))];const wb=XLSX.utils.book_new();const ws=XLSX.utils.aoa_to_sheet(aoa);ws['!cols']=COLS.map(c=>({wch:Math.min(Math.max(c.length+3,14),42)}));for(let C2=0;C2<COLS.length;C2++){const a=XLSX.utils.encode_cell({r:0,c:C2});if(!ws[a])continue;ws[a].s={font:{name:'Arial',sz:9,bold:true,color:{rgb:'FFFFFF'}},fill:{fgColor:{rgb:'1E3A8A'}},alignment:{horizontal:'center',vertical:'center',wrapText:true}};}for(let R=1;R<aoa.length;R++){for(let C2=0;C2<COLS.length;C2++){const a=XLSX.utils.encode_cell({r:R,c:C2});if(!ws[a])ws[a]={v:'',t:'s'};ws[a].s={font:{name:'Arial',sz:9},fill:{fgColor:{rgb:R%2===0?'EFF6FF':'FFFFFF'}},alignment:{vertical:'center'}};}}ws['!rows']=[{hpt:28}];XLSX.utils.book_append_sheet(wb,ws,'Shipments');XLSX.writeFile(wb,`delhivery_${new Date().toISOString().slice(0,10)}.xlsx`);h.className='hint ok-b';h.textContent=`✓ ${rows.length} shipments exported`;showToast(`${rows.length} shipments downloaded!`);}
-function clearShip(){document.getElementById('shipInput').value='';document.getElementById('shipHint').textContent='';document.getElementById('shipHint').className='hint';document.getElementById('shipPreview').style.display='none';}
+/* ══ DELIVERY ══ */
+
+/* — constants matching your Formial setup — */
+const CC = {
+  pickupLocation: 'Formial Labs',
+  transportMode:  'Surface',
+  paymentMode:    'Prepaid',
+  codAmount:      '0',
+  skuCode:        'FORMIAL-CREAM-20G',
+  skuName:        'Custom Compounded Cream 20g',
+  quantity:       '1',
+  packagingType:  'Flyer',
+  unitPrice:      '2499',
+  length:         '15',
+  breadth:        '8',
+  height:         '5',
+  weight:         '400',
+  fragile:        'No',
+  billingAddressSame: 'Yes',
+  sellerName:     'Formial Skin Care',
+};
+
+/* CSV column order exactly matching Shiprocket template */
+const COLS = [
+  '*Sale Order Number',
+  '*Pickup Location Name',
+  '*Transport Mode',
+  '*Payment Mode',
+  'COD Amount',
+  '*Customer Name',
+  '*Customer Phone',
+  '*Shipping Address Line1',
+  'Shipping Address Line2',
+  '*Shipping City',
+  '*Shipping State',
+  '*Shipping Pincode',
+  '*Item Sku Code',
+  '*Item Sku Name',
+  '*Quantity Ordered',
+  'Packaging Type',
+  '*Unit Item Price',
+  'Length (cm)',
+  'Breadth (cm)',
+  'Height (cm)',
+  'Weight (gm)',
+  'Fragile Shipment',
+  'Discount Type',
+  'Discount Value',
+  'Tax Class Code',
+  'Customer Email',
+  'Billing Address same as Shipping Address',
+  'Billing Address Line1',
+  'Billing Address Line2',
+  'Billing City',
+  'Billing State',
+  'Billing Pincode',
+  'e-Way Bill Number',
+  'Seller Name',
+  'Select NDD'
+];
+
+/* preview columns */
+const PC = ['*Sale Order Number','*Customer Name','*Shipping Address Line1','*Shipping City','*Shipping State','*Shipping Pincode','*Customer Phone'];
+
+/* — parse one address line — */
+function parseLine(line) {
+  line = line.trim();
+  if (!line) return null;
+
+  // 1. Extract mobile — trailing 10-digit number
+  const pm = line.match(/\b(\d{10})\s*$/);
+  const mobile = pm ? pm[1] : '';
+  if (pm) line = line.slice(0, pm.index).trim();
+
+  // 2. Extract pincode — last 6-digit group (may be preceded by dash/space)
+  const pcm = line.match(/(?:[-–]\s*)?(\d{6})\s*$/);
+  const pincode = pcm ? pcm[1] : '';
+  if (pcm) line = line.slice(0, pcm.index).trim();
+
+  // 3. First two words = name, rest = address
+  const words = line.trim().split(/\s+/);
+  const tc = s => s.replace(/\b\w/g, c => c.toUpperCase());
+  const name = tc(words.slice(0, 2).join(' '));
+  const address = words.slice(2).join(' ').trim();
+
+  return { name, address, pincode, mobile };
+}
+
+/* — pincode → {city, state} via postal API — */
+const pincodeCache = {};
+
+async function lookupPincode(pin) {
+  if (pincodeCache[pin]) return pincodeCache[pin];
+  try {
+    const r = await fetch(`https://api.postalpincode.in/pincode/${pin}`);
+    const data = await r.json();
+    if (data && data[0] && data[0].Status === 'Success') {
+      const po = data[0].PostOffice[0];
+      const result = { city: po.District, state: po.State };
+      pincodeCache[pin] = result;
+      return result;
+    }
+  } catch (e) {}
+  return { city: '', state: '' };
+}
+
+/* — build rows with pincode lookups — */
+async function buildRows(lines) {
+  // parse all lines first
+  const parsed = lines.map((l, i) => ({ raw: l, idx: i, p: parseLine(l) })).filter(x => x.p);
+
+  // unique pincodes
+  const pins = [...new Set(parsed.map(x => x.p.pincode).filter(Boolean))];
+
+  // show progress bar
+  const bar = document.getElementById('lookupBar');
+  const fill = document.getElementById('lookupFill');
+  const items = document.getElementById('lookupItems');
+  bar.classList.add('visible');
+  items.innerHTML = '';
+  fill.style.width = '0%';
+
+  const pinResults = {};
+  for (let i = 0; i < pins.length; i++) {
+    const pin = pins[i];
+    const res = await lookupPincode(pin);
+    pinResults[pin] = res;
+    fill.style.width = `${Math.round(((i + 1) / pins.length) * 100)}%`;
+    const row = document.createElement('div');
+    row.className = 'lookup-row';
+    const success = res.city || res.state;
+    row.innerHTML = `<span class="lpin">${pin}</span><span class="lres${success ? '' : ' fail'}">${success ? `${res.city}, ${res.state}` : 'not found'}</span>`;
+    items.appendChild(row);
+  }
+
+  // build final rows
+  const prefix = document.getElementById('orderPrefix').value.trim().toUpperCase() || 'FL';
+  const startNum = parseInt(document.getElementById('orderStart').value) || 1;
+
+  const rows = [];
+  parsed.forEach((x, ri) => {
+    const p = x.p;
+    const loc = pinResults[p.pincode] || { city: '', state: '' };
+    const orderNum = `${prefix}-${String(startNum + ri).padStart(4, '0')}`;
+    const row = {};
+    COLS.forEach(c => row[c] = '');
+    row['*Sale Order Number']   = orderNum;
+    row['*Pickup Location Name']= CC.pickupLocation;
+    row['*Transport Mode']      = CC.transportMode;
+    row['*Payment Mode']        = CC.paymentMode;
+    row['COD Amount']           = CC.codAmount;
+    row['*Customer Name']       = p.name;
+    row['*Customer Phone']      = p.mobile;
+    row['*Shipping Address Line1'] = p.address;
+    row['Shipping Address Line2']  = '';
+    row['*Shipping City']       = loc.city;
+    row['*Shipping State']      = loc.state;
+    row['*Shipping Pincode']    = p.pincode;
+    row['*Item Sku Code']       = CC.skuCode;
+    row['*Item Sku Name']       = CC.skuName;
+    row['*Quantity Ordered']    = CC.quantity;
+    row['Packaging Type']       = CC.packagingType;
+    row['*Unit Item Price']     = CC.unitPrice;
+    row['Length (cm)']          = CC.length;
+    row['Breadth (cm)']         = CC.breadth;
+    row['Height (cm)']          = CC.height;
+    row['Weight (gm)']          = CC.weight;
+    row['Fragile Shipment']     = CC.fragile;
+    row['Billing Address same as Shipping Address'] = CC.billingAddressSame;
+    row['Seller Name']          = CC.sellerName;
+    rows.push(row);
+  });
+
+  return rows;
+}
+
+function setLoading(on) {
+  document.getElementById('previewBtn').disabled = on;
+  document.getElementById('downloadBtn').disabled = on;
+}
+
+async function previewShip() {
+  const lines = document.getElementById('shipInput').value.trim().split('\n').filter(l => l.trim());
+  const h = document.getElementById('shipHint');
+  if (!lines.length) { h.textContent = 'paste addresses first'; h.className = 'hint err'; return; }
+
+  h.textContent = 'Looking up pincodes…'; h.className = 'hint loading';
+  setLoading(true);
+
+  const rows = await buildRows(lines);
+  setLoading(false);
+
+  if (!rows.length) { h.textContent = 'could not parse any lines'; h.className = 'hint err'; return; }
+
+  const thead = document.querySelector('#prevTbl thead');
+  const tbody = document.querySelector('#prevTbl tbody');
+  thead.innerHTML = '<tr>' + PC.map(c => `<th>${c.replace('*','')}</th>`).join('') + '</tr>';
+  tbody.innerHTML = rows.map(r => '<tr>' + PC.map(c => `<td>${r[c] ?? ''}</td>`).join('') + '</tr>').join('');
+  document.getElementById('shipPreview').style.display = 'block';
+  h.className = 'hint ok-b';
+  h.textContent = `✓ ${rows.length} shipment${rows.length > 1 ? 's' : ''} ready`;
+}
+
+async function downloadShipCSV() {
+  const lines = document.getElementById('shipInput').value.trim().split('\n').filter(l => l.trim());
+  const h = document.getElementById('shipHint');
+  if (!lines.length) { h.textContent = 'paste addresses first'; h.className = 'hint err'; return; }
+
+  h.textContent = 'Looking up pincodes…'; h.className = 'hint loading';
+  setLoading(true);
+
+  const rows = await buildRows(lines);
+  setLoading(false);
+
+  if (!rows.length) { h.textContent = 'could not parse any lines'; h.className = 'hint err'; return; }
+
+  // Build CSV string
+  const escape = v => {
+    const s = String(v ?? '');
+    return (s.includes(',') || s.includes('"') || s.includes('\n')) ? `"${s.replace(/"/g,'""')}"` : s;
+  };
+
+  // Header row — keep asterisks as Shiprocket expects them
+  const csvLines = [COLS.join(',')];
+  for (const r of rows) {
+    csvLines.push(COLS.map(c => escape(r[c])).join(','));
+  }
+  const blob = new Blob([csvLines.join('\r\n')], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `shiprocket_${new Date().toISOString().slice(0,10)}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+
+  h.className = 'hint ok-b';
+  h.textContent = `✓ ${rows.length} shipments exported`;
+  showToast(`${rows.length} shipments downloaded!`);
+}
+
+function clearShip() {
+  document.getElementById('shipInput').value = '';
+  document.getElementById('shipHint').textContent = '';
+  document.getElementById('shipHint').className = 'hint';
+  document.getElementById('shipPreview').style.display = 'none';
+  document.getElementById('lookupBar').classList.remove('visible');
+}
 
 function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
 </script>
