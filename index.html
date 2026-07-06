@@ -421,7 +421,7 @@ function parseLine(line) {
   if (!line) return null;
 
   // 1. Mobile — trailing 10-digit number
-  const pm = line.match(/\b(\d{10})\s*$/);
+  const pm = line.match(/(?:\+?91[\s\-]?|0)?([6-9]\d{9})\s*$/);
   const mobile = pm ? pm[1] : '';
   if (pm) line = line.slice(0, pm.index).trim();
 
